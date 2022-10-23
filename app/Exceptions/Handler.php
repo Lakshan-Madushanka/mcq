@@ -2,7 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,5 +50,25 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        if (\request()->wantsJson()) {
+            $this->renderable(function (NotFoundHttpException $exception) {
+                $message = $exception->getMessage();
+                if (! empty($message) && str_contains($message, 'No query results')) {
+                    return new JsonResponse('Resource not found', 404);
+                }
+            });
+
+            /**
+             * Handle integrity constraint violation when try to delete record which has
+             *foreign key associated with other record
+             */
+            $this->renderable(function (QueryException $exception, Request $request) {
+                if (isset($exception->errorInfo[1]) && $exception->errorInfo[1] === 1451) {
+                    return new JsonResponse('The Record  has associated with other records !',
+                        400);
+                }
+            });
+        }
     }
 }
