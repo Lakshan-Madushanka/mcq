@@ -1,4 +1,4 @@
-FROM php:8.0.24-alpine
+FROM bitnami/php-fpm:8.0.24
 
 ARG user
 ARG uid
