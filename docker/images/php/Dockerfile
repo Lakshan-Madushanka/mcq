@@ -1,4 +1,4 @@
-FROM devilbox/php-fpm:8.0-base
+FROM devilbox/php-fpm-8.1:latest
 
 ARG user
 ARG uid
