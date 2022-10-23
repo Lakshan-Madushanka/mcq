@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.0.24
+FROM devilbox/php-fpm:8.0-prod
 
 ARG user
 ARG uid
